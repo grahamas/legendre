@@ -23,13 +23,27 @@ input_mat = eval(parse(parsed_args["matrix"]))
 
 # println("$(tex)")
 
-function submatrices(matrix::Array{Int, 2})
+#####
+# The main difficulty in this function is that we want to be able
+# to reconstruct all the steps of the differentiation, so submatrices
+# must return all the submatrices found, in the correct order. 
+#
+# Since submatrices is recursive, with multiple recursions per function call,
+# this amounts to collapsing the levels of a tree into a list.
+#
+# To accomplish this collapsing, each function call includes the entire "tree"
+# list along with the current level. We happen to know that given an n x n matrix,
+# there will be n-1 levels to the matrix, so we initialize the list-tree
+# with that assumption.
+#####
+
+function submatrices!(matrix::Array{T, 2}, from_parent)
 	numrows = size(matrix, 1)
 	numcols = size(matrix, 2)
 	pivrow = 1 # In case I add functionality to change which we iter over
 	# Currently only iterates over columns
 
-	thislevel = []
+	thislevel = from_parent
 	next = []
 
 	for pivcol in 1:numcols
@@ -52,8 +66,12 @@ function submatrices(matrix::Array{Int, 2})
 	return (thislevel, next)
 end
 
-function determinant_steps(matrix::Array{Int,2})
-	thislevel, next = submatrices(matrix)
+function determinant_steps(matrix::Array{T,2})
+	numrows = size(matrix, 1)
+	numcols = size(matrix, 2)
+	# TODO: Handle inequal rows/nums. ATM, just let them burn.
+	submats = Array(Array, numrows-1)
+	submatrices!(matrix, [])
 	stepslist = [[texify(thislevel,"v")]]
 	while 
 
