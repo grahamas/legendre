@@ -12,6 +12,8 @@
 # functions of statements, returning statements. However,
 # what if you want to ask a question about a question?
 
+module typedefs
+
 abstract Statement
 
 abstract Problem
@@ -47,6 +49,8 @@ type Definition <: Model
     Definition(system::System) =  new(system.relations)
     Definition(relations::Array{Relation}) = new(relations)
     Definition(input::String) = new([DummyRelation(input)])
+end
+
 end
 
 defn = Definition("Hello there")
